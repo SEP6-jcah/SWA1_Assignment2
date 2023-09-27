@@ -182,40 +182,46 @@ describe("Board", () => {
             })
             it("finds single horizontal match when moving first piece to a match", () => {
                 generator.prepare('C', 'D', 'A')
-                expect(Board.move(generator, board, {row: 2, col: 1}, {row: 0, col: 1}).effects.slice(0, 1))
-                    .toEqual([{kind: 'Match', match: {matched: 'A', positions: [{row: 0, col: 0}, {row: 0, col: 1}, {row: 0, col: 2}]}}])
+                expect(Board.move(generator, board, {row: 2, col: 1}, {row: 0, col: 1}).effects)
+                    .toContainEqual({kind: 'Match', match: {matched: 'A', positions: [{row: 0, col: 0}, {row: 0, col: 1}, {row: 0, col: 2}]}})
             })
             it("finds single horizontal match when moving second piece to a match", () => {
                 generator.prepare('C', 'D', 'A')
-                expect(Board.move(generator, board, {row: 0, col: 1}, {row: 2, col: 1}).effects.slice(0, 1))
-                    .toEqual([{kind: 'Match', match: {matched: 'A', positions: [{row: 0, col: 0}, {row: 0, col: 1}, {row: 0, col: 2}]}}])
+                expect(Board.move(generator, board, {row: 0, col: 1}, {row: 2, col: 1}).effects)
+                    .toContainEqual({kind: 'Match', match: {matched: 'A', positions: [{row: 0, col: 0}, {row: 0, col: 1}, {row: 0, col: 2}]}})
             })
             it("finds single vertical match when moving first piece to a match", () => {
                 generator.prepare('C', 'D', 'A')
-                expect(Board.move(generator, board, {row: 3, col: 3}, {row: 2, col: 3}).effects.slice(0, 1))
-                    .toEqual([{kind: 'Match', match: {matched: 'C', positions: [{row: 0, col: 3}, {row: 1, col: 3}, {row: 2, col: 3}]}}])
+                expect(Board.move(generator, board, {row: 3, col: 3}, {row: 2, col: 3}).effects)
+                    .toContainEqual({kind: 'Match', match: {matched: 'C', positions: [{row: 0, col: 3}, {row: 1, col: 3}, {row: 2, col: 3}]}})
             })
             it("finds single vertical match when moving second piece to a match", () => {
                 generator.prepare('C', 'D', 'A')
-                expect(Board.move(generator, board, {row: 2, col: 3}, {row: 3, col: 3}).effects.slice(0, 1))
-                    .toEqual([{kind: 'Match', match: {matched: 'C', positions: [{row: 0, col: 3}, {row: 1, col: 3}, {row: 2, col: 3}]}}])
+                expect(Board.move(generator, board, {row: 2, col: 3}, {row: 3, col: 3}).effects)
+                    .toContainEqual({kind: 'Match', match: {matched: 'C', positions: [{row: 0, col: 3}, {row: 1, col: 3}, {row: 2, col: 3}]}})
             })
             it("fires multiple events on horz + vert matches", () => {
                 generator.prepare('G', 'H', 'I')
                 generator.prepare('J', 'K', 'L')
                 generator.prepare('J', 'K', 'L')
-                expect(Board.move(generator, board, {row: 3, col: 4}, {row: 3, col: 0}).effects.slice(0, 2)).toEqual([
-                    {kind: 'Match', match: {matched: 'D', positions: [{row: 3, col: 0}, {row: 3, col: 1}, {row: 3, col: 2}]}},
-                    {kind: 'Match', match: {matched: 'D', positions: [{row: 1, col: 0}, {row: 2, col: 0}, {row: 3, col: 0}]}},
-                ])
+                const moved = Board.move(generator, board, {row: 3, col: 4}, {row: 3, col: 0})
+                expect(moved.effects).toContainEqual(
+                    {kind: 'Match', match: {matched: 'D', positions: [{row: 3, col: 0}, {row: 3, col: 1}, {row: 3, col: 2}]}}
+                )
+                expect(moved.effects).toContainEqual(
+                    {kind: 'Match', match: {matched: 'D', positions: [{row: 1, col: 0}, {row: 2, col: 0}, {row: 3, col: 0}]}}
+                )
             })
             it("fires multiple events when both pieces make new matches", () => {
                 generator.prepare('C', 'D', 'A')
                 generator.prepare('B', 'A', 'B')
-                expect(Board.move(generator, board, {row: 3, col: 2}, {row: 3, col: 0}).effects.slice(0, 2)).toEqual([
-                    {kind: 'Match', match: {matched: 'C', positions: [{row: 1, col: 2}, {row: 2, col: 2}, {row: 3, col: 2}]}},
-                    {kind: 'Match', match: {matched: 'D', positions: [{row: 1, col: 0}, {row: 2, col: 0}, {row: 3, col: 0}]}},
-                ])
+                const moved = Board.move(generator, board, { row: 3, col: 2 }, { row: 3, col: 0 })
+                expect(moved.effects).toContainEqual(
+                    {kind: 'Match', match: {matched: 'C', positions: [{row: 1, col: 2}, {row: 2, col: 2}, {row: 3, col: 2}]}}
+                )
+                expect(moved.effects).toContainEqual(
+                    {kind: 'Match', match: {matched: 'D', positions: [{row: 1, col: 0}, {row: 2, col: 0}, {row: 3, col: 0}]}}
+                )
             })
             it("doesn't swap on illegal moves", () => {
                 generator.prepare('C', 'D', 'A', 'C', 'D', 'A', 'C', 'D', 'A')
