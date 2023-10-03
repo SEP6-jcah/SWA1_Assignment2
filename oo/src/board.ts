@@ -16,7 +16,7 @@ export type BoardEvent<T> =
 
 export type BoardListener<T> = (event: BoardEvent<T>) => void;
 
-class Board<T> {
+export class Board<T> {
     private tiles: T[][];
     private listeners: BoardListener<T>[] = [];
   
@@ -89,22 +89,128 @@ class Board<T> {
     }
   
     private findMatches(): Match<T>[] {
-      // Logic to find matches here...
+      var matches: Match<T>[]
+      var current_piece
+
+      // Checking rows for matches
+      for (var row = 0; row < this.tiles.length; row++) {
+          var length_of_match = 1
+
+          for (var col = 0; col < this.tiles[row].length; col++) {
+            var piece = this.tiles[row][col]
+
+            if (piece === current_piece) {
+              length_of_match++
+            }
+            else {
+              if(current_piece !== undefined && length_of_match >= 3) {
+                const match: Match<T> = {
+                  matched: current_piece,
+                  positions: []
+                }
+
+                for (var i = 0; i < length_of_match; i++) {
+                  match.positions.push({ row, col: col - 1 })
+                }
+
+                matches.push(match)
+              }
+
+              current_piece = piece
+              length_of_match = 1
+            }
+          }
+      }
+
+      // Checking columns for matches
+      for (var col = 0; col < this.tiles[0].length; col++) {
+        var length_of_match = 1
+
+        // Top row has already been checked during the row check
+        for (var row = 1; row < this.tiles[col].length; row++) {
+          var piece = this.tiles[row][col]
+
+          if (piece === current_piece) {
+            length_of_match++
+          }
+          else {
+            if(current_piece !== undefined && length_of_match >= 3) {
+              const match: Match<T> = {
+                matched: current_piece,
+                positions: []
+              }
+
+              for (var i = 0; i < length_of_match; i++) {
+                match.positions.push({ row: row - 1 - i, col })
+              }
+
+              matches.push(match)
+            }
+
+            current_piece = piece
+            length_of_match = 1
+          }
+        }
+
+        if (current_piece !== undefined && length_of_match >= 3) {
+          const match: Match<T> = {
+            matched: current_piece,
+            positions: []
+          }
+
+          for (var i = 0; i < length_of_match; i++) {
+            match.positions.push({ row: this.tiles.length -1 - i, col })
+          }
+
+          matches.push(match)
+        }
+      }
+
+      return matches
     }
   
     private removeMatch(match: Match<T>): void {
-      // Logic to remove matches here...
+      // Delete the matched pieces
+      match.positions.forEach((pos) => {
+        this.tiles[pos.row][pos.col] = undefined
+      })
+
+      for (var col = 0; col < this.tiles[0].length; col++) {
+        for (var row = this.tiles.length - 1; row >= 0; row--) {
+          if (this.tiles[row][col] === undefined) {
+            var row_above = row - 1
+            while (this.tiles[row_above][col] === undefined && row_above >= 0) {
+              row_above--
+            }
+
+            if (row_above >= 0 ) {
+              // Duplicate the piece from the row above down one tile
+              this.tiles[row][col] = this.tiles[row_above][col]
+              // Delete the original tile
+              this.tiles[row_above][col] = undefined
+            }
+          }
+        }
+      }
     }
   
     private refill(): void {
-      // Logic to refill the board here...
+      for (var col = 0; col < this.tiles[0].length; col++) {
+        // Starting from the bottom row
+        for (var row = this.tiles.length - 1; row >= 0; row--) {
+          // Checking if the tile is empty
+          if (this.tiles[row][col] === undefined) {
+            // Shift pieces down from tile above
+            for(var i = row; i > 0; i--) {
+              this.tiles[i][col] = this.tiles[i - 1][col]
+            }
+
+            // this.tiles[0][col] = 
+            // TODO: generate new piece on this tile
+          }
+        }
+      }
       // Notify listeners about refill
       this.notify({ kind: 'Refill' });
     }
   }
-  
-  
-  
-  
-  
-  
