@@ -77,7 +77,68 @@ export class Board<T> {
     }
 
     // Check if the pieces are different and can be swapped
-    return pieceFrom !== pieceTo;
+    if (pieceFrom === pieceTo) {
+      return false;
+    }
+
+    // Check if the move is within the same row or the same column
+    if (from.row !== to.row && from.col !== to.col) {
+      return false;
+    }
+
+    // Temporarily swap pieces to check for matches
+    this.data[from.row][from.col] = pieceTo;
+    this.data[to.row][to.col] = pieceFrom;
+
+    // Check for matches in the swapped positions
+    const hasMatch =
+      this.checkHorizontalMatch(from, pieceTo) ||
+      this.checkVerticalMatch(from, pieceTo) ||
+      this.checkHorizontalMatch(to, pieceFrom) ||
+      this.checkVerticalMatch(to, pieceFrom);
+
+    // Restore the original pieces
+    this.data[from.row][from.col] = pieceFrom;
+    this.data[to.row][to.col] = pieceTo;
+
+    return hasMatch;
+  }
+
+  private checkHorizontalMatch(position: Position, piece: T): boolean {
+    const { row, col } = position;
+
+    for (let i = col - 2; i <= col + 2; i++) {
+      if (
+        i >= 0 &&
+        i + 2 < this.width &&
+        this.piece({ row, col: i }) === piece &&
+        this.piece({ row, col: i + 1 }) === piece &&
+        this.piece({ row, col: i + 2 }) === piece
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private checkVerticalMatch(position: Position, piece: T): boolean {
+    const { row, col } = position;
+
+    for (let i = row - 2; i <= row + 2; i++) {
+      if (
+        i >= 0 &&
+        i + 2 < this.height &&
+        this.piece({ row: i, col }) === piece &&
+        this.piece({ row: i + 1, col }) === piece &&
+        this.piece({ row: i + 2, col }) === piece
+      ) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
+
 
