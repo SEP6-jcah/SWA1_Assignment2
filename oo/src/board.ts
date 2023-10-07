@@ -78,8 +78,18 @@ export class Board<T> {
 
         if (first.col === second.col || first.row === second.row)
         {
-            if (this.checkColumnMatch || this.checkRowMatch)
+            this.swap(first, second);
+
+            let check1 = this.checkColumnMatch(first,secondPiece);
+            let check2 = this.checkColumnMatch(second, firstPiece);
+            let check3 = this.checkRowMatch(first,secondPiece);
+            let check4 = this.checkRowMatch(second, firstPiece);
+
+            if (check1 || check2 || check3 || check4)
+            {
+                this.swap(first, second);
                 return true;
+            }
         }
 
         return false;
@@ -97,7 +107,7 @@ export class Board<T> {
                 let piece2 = this.piece({row, col:i+1});
                 let piece3 = this.piece({row, col:i+2});
 
-                if (piece1 === piece2 === piece3 === piece)
+                if (piece1 === piece && piece2 === piece && piece3 === piece)
                     return true;
             }
         }
@@ -117,7 +127,7 @@ export class Board<T> {
                 let piece2 = this.piece({row:i+1, col});
                 let piece3 = this.piece({row:i+2, col});
 
-                if (piece1 === piece2 === piece3 === piece)
+                if (piece1 === piece && piece2 === piece && piece3 === piece)
                     return true;
             }
         }
@@ -127,11 +137,15 @@ export class Board<T> {
     
     move(first: Position, second: Position) {
         if(this.canMove(first, second)){
-            let firstPiece = this.piece(first);
-            let seconfPiece = this.piece(second);
-
-            this.board[first.row][first.col] = seconfPiece;
-            this.board[second.row][second.col] = firstPiece;
+            this.swap(first, second);
         }
+    }
+
+    private swap(first:Position, second:Position){
+        let firstPiece = this.piece(first);
+        let seconfPiece = this.piece(second);
+
+        this.board[first.row][first.col] = seconfPiece;
+        this.board[second.row][second.col] = firstPiece;
     }
 }
