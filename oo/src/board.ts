@@ -70,22 +70,68 @@ export class Board<T> {
     }
 
     canMove(first: Position, second: Position): boolean {
+        let firstPiece = this.piece(first);
+        let secondPiece = this.piece(second);
 
-        if (first.col == second.col)
+        if(firstPiece === undefined || secondPiece === undefined || firstPiece === secondPiece)
+            return false;
+
+        if (first.col === second.col || first.row === second.row)
         {
-            let dif = first.row - second.row;
-            if (dif == 1 || dif == -1)
+            if (this.checkColumnMatch || this.checkRowMatch)
                 return true;
         }
-        else if (first.row == second.row){
-            let dif = first.col - first.col;
-            if (dif == 1 || dif == -1)
-                return true;
+
+        return false;
+    }
+
+    private checkColumnMatch(position:Position, piece:T):boolean{
+        let col = position.col;
+        let row = position.row;
+
+        for(let i = col - 2; i < col +2; i++)
+        {
+            if (i >= 0 && i+2 <= this.width)
+            {
+                let piece1 = this.piece({row, col:i});
+                let piece2 = this.piece({row, col:i+1});
+                let piece3 = this.piece({row, col:i+2});
+
+                if (piece1 === piece2 === piece3 === piece)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    private checkRowMatch(position:Position, piece:T):boolean{
+        let col = position.col;
+        let row = position.row;
+
+        for(let i = row - 2; i < row +2; i++)
+        {
+            if (i >= 0 && i+2 <= this.height)
+            {
+                let piece1 = this.piece({row:i, col});
+                let piece2 = this.piece({row:i+1, col});
+                let piece3 = this.piece({row:i+2, col});
+
+                if (piece1 === piece2 === piece3 === piece)
+                    return true;
+            }
         }
 
         return false;
     }
     
     move(first: Position, second: Position) {
+        if(this.canMove(first, second)){
+            let firstPiece = this.piece(first);
+            let seconfPiece = this.piece(second);
+
+            this.board[first.row][first.col] = seconfPiece;
+            this.board[second.row][second.col] = firstPiece;
+        }
     }
 }
