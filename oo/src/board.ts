@@ -26,6 +26,8 @@ export class Board<T> {
   private readonly width: number;
   private readonly height: number;
   private readonly generator: Generator<T>;
+  private listeners: BoardListener<T>[] = [];
+
 
   constructor(generator: Generator<T>, width: number, height: number) {
     this.width = width;
@@ -136,9 +138,98 @@ export class Board<T> {
         return true;
       }
     }
-
+    
     return false;
   }
+  private emitMatchEvent(piece: T, positions: Position[]) {
+    const match: Match<T> = {
+      matched: piece,
+      positions,
+    };
+    const event: BoardEvent<T> = {
+      kind: 'Match',
+      match,
+    };
+    this.listeners.forEach((listener) => listener(event));
+  }
+
+  move(from: Position, to: Position): boolean {
+    // Check if the move is valid
+    if (!this.canMove(from, to)) {
+      return false;
+    }
+  
+    const pieceFrom = this.piece(from);
+    const pieceTo = this.piece(to);
+  
+    // Perform the move by swapping pieces
+    this.data[from.row][from.col] = pieceTo;
+    this.data[to.row][to.col] = pieceFrom;
+  
+    // Check for matches at both 'from' and 'to' positions
+    const hasMatchFrom = this.checkHorizontalMatch(from, pieceTo) || this.checkVerticalMatch(from, pieceTo);
+    const hasMatchTo = this.checkHorizontalMatch(to, pieceFrom) || this.checkVerticalMatch(to, pieceFrom);
+  
+    // If there are matches at either position, emit 'Match' events
+    if (hasMatchFrom) {
+      const matchPositionsFrom = this.findMatchPositions(from, pieceTo);
+      matchPositionsFrom.forEach((position) => {
+        const matchPiece = this.piece(position);
+        this.emitMatchEvent(matchPiece, this.findMatchPositions(position, matchPiece));
+      });
+    }
+    if (hasMatchTo) {
+      const matchPositionsTo = this.findMatchPositions(to, pieceFrom);
+      matchPositionsTo.forEach((position) => {
+        const matchPiece = this.piece(position);
+        this.emitMatchEvent(matchPiece, this.findMatchPositions(position, matchPiece));
+      });
+    }
+  
+    return true;
+  }
+
+  private findMatchPositions(position: Position, piece: T): Position[] {
+    const { row, col } = position;
+    const positions: Position[] = [];
+
+    for (let i = col - 2; i <= col + 2; i++) {
+      if (
+        i >= 0 &&
+        i + 2 < this.width &&
+        this.piece({ row, col: i }) === piece &&
+        this.piece({ row, col: i + 1 }) === piece &&
+        this.piece({ row, col: i + 2 }) === piece
+      ) {
+        positions.push(
+          { row, col: i },
+          { row, col: i + 1 },
+          { row, col: i + 2 }
+        );
+      }
+    }
+
+    for (let i = row - 2; i <= row + 2; i++) {
+      if (
+        i >= 0 &&
+        i + 2 < this.height &&
+        this.piece({ row: i, col }) === piece &&
+        this.piece({ row: i + 1, col }) === piece &&
+        this.piece({ row: i + 2, col }) === piece
+      ) {
+        positions.push(
+          { row: i, col },
+          { row: i + 1, col },
+          { row: i + 2, col }
+        );
+      }
+    }
+
+    return positions;
+  }
+
+  addListener(listener: BoardListener<T>): void {
+    this.listeners.push(listener);
+  }
+
 }
-
-
