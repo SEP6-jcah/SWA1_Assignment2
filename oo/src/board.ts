@@ -10,32 +10,22 @@ export type Match<T> = {
     positions: Position[]
 }
 
-export type BoardEvent<T> = 
-| { kind: 'Match'; match: Match<T> }
-| { kind: 'Refill' };
+export type BoardEvent<T> = ?;
 
-export type BoardListener<T> = (event: BoardEvent<T>) => void;
+export type BoardListener<T> = ?;
 
 export class Board<T> {
-    private tiles: T[][];
-    private listeners: BoardListener<T>[] = [];
-  
-    constructor(rows: number, cols: number, generator: () => T) {
-      this.tiles = Array.from({ length: rows }, () =>
-        Array.from({ length: cols }, () => generator())
-      );
+
+    addListener(listener: BoardListener<T>) {
     }
-  
-    addListener(listener: BoardListener<T>): void {
-      this.listeners.push(listener);
+
+    piece(p: Position): T | undefined {
     }
-  
-    private notify(event: BoardEvent<T>): void {
-      this.listeners.forEach(listener => listener(event));
+
+    canMove(first: Position, second: Position): boolean {
     }
-  
-    piece(position: Position): T | undefined {
-      return this.tiles[position.row]?.[position.col];
+    
+    move(first: Position, second: Position) {
     }
   
     canMove(position1: Position, position2: Position): boolean {
@@ -213,4 +203,15 @@ export class Board<T> {
       // Notify listeners about refill
       this.notify({ kind: 'Refill' });
     }
-  }
+}
+
+
+// export class Board<T> {
+//   private tiles: T[][];
+//   private listeners: BoardListener<T>[] = [];
+
+//   constructor(rows: number, cols: number, generator: () => T) {
+//     this.tiles = Array.from({ length: rows }, () =>
+//       Array.from({ length: cols }, () => generator())
+//     );
+//   }
