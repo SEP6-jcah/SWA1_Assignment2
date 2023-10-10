@@ -28,9 +28,9 @@ export class Board<T> {
     board: (T | undefined)[][];
     listeners: BoardListener<T>[] = [];
     generator: Generator<T>;
+    matches: Match<T>[];
     width: number;
     height: number;
-    matches: Match<T>[];
 
     constructor(generator: Generator<T>, width: number, height: number) {
         this.generator = generator;
@@ -46,7 +46,9 @@ export class Board<T> {
             }
         }
 
-        while (this.findMatches());
+        while (this.findMatches()) {
+            this.doMatch();
+        };
     }
 
     positions(): Position[] {
@@ -94,9 +96,11 @@ export class Board<T> {
             if (check1 || check2 || check3 || check4) {
                 this.swap(first, second);
                 return true;
+            } else {
+                this.swap(first, second);
             }
 
-            this.swap(first, second);
+
         }
 
         return false;
@@ -117,10 +121,10 @@ export class Board<T> {
                 let piece3 = this.piece(position3);
 
                 if (piece1 === piece && piece2 === piece && piece3 === piece) {
-                    let positions = [position1, position2, position3];
-                    let match = { matched: piece, positions }
-                    this.matches.push(match);
-                    this.notify({ kind: 'Match', match })
+                    //let positions = [position1, position2, position3];
+                    //let match = { matched: piece, positions }
+                    //this.notify({ kind: 'Match', match: match })
+                    //this.doMatch(match);
 
                     return true;
                 }
@@ -145,9 +149,10 @@ export class Board<T> {
                 let piece3 = this.piece(position3);
 
                 if (piece1 === piece && piece2 === piece && piece3 === piece) {
-                    let positions = [position1, position2, position3];
-                    this.matches.push({ matched: piece, positions });
-                    this.notify({ kind: 'Match', match: { matched: piece, positions } })
+                    //let positions = [position1, position2, position3];
+                    //let match = { matched: piece, positions }
+                    //this.notify({ kind: 'Match', match: match })
+                    //this.doMatch(match);
 
                     return true;
                 }
@@ -160,7 +165,9 @@ export class Board<T> {
     move(first: Position, second: Position) {
         if (this.canMove(first, second)) {
             this.swap(first, second);
-            while (this.findMatches()) { }
+            while (this.findMatches()) {
+                this.doMatch();
+            }
         }
     }
 
@@ -172,14 +179,18 @@ export class Board<T> {
         this.board[second.row][second.col] = firstPiece;
     }
 
-    private doMatch(match: Match<T>) {
-        let position1 = match.positions[0];
-        let position2 = match.positions[1];
-        let position3 = match.positions[2];
+    private doMatch() {
+        this.matches.forEach(match => {
+            let position1 = match.positions[0];
+            let position2 = match.positions[1];
+            let position3 = match.positions[2];
 
-        this.board[position1.row][position1.col] = undefined;
-        this.board[position2.row][position2.col] = undefined;
-        this.board[position3.row][position3.col] = undefined;
+            this.board[position1.row][position1.col] = undefined;
+            this.board[position2.row][position2.col] = undefined;
+            this.board[position3.row][position3.col] = undefined;
+        });
+
+        this.matches = [];
 
         this.notify({ kind: 'Refill' })
         this.doRefill();
@@ -189,10 +200,19 @@ export class Board<T> {
         let colMatch = false;
         let rowMatch = false;
 
-        for (let row = 0; row < this.height - 2; row++) {
+        for (let row = 0; row < this.height; row++) {
             for (let col = 0; col < this.width - 2; col++) {
-                colMatch = this.findMatchCol(row, col);
-                rowMatch = this.findMatchRow(row, col);
+                if (!colMatch) {
+                    colMatch = this.findMatchCol(row, col);
+                }
+            }
+        }
+
+        for (let row = 0; row < this.height - 2; row++) {
+            for (let col = 0; col < this.width; col++) {
+                if (!rowMatch) {
+                    rowMatch = this.findMatchRow(row, col);
+                }
             }
         }
 
@@ -213,7 +233,8 @@ export class Board<T> {
             let match = { matched: piece1, positions }
 
             this.notify({ kind: 'Match', match })
-            this.doMatch(match);
+            this.matches.push(match);
+            //this.doMatch(match);
 
             return true;
         }
@@ -235,7 +256,8 @@ export class Board<T> {
             let match = { matched: piece1, positions }
 
             this.notify({ kind: 'Match', match })
-            this.doMatch(match);
+            this.matches.push(match);
+            //this.doMatch(match);
 
             return true;
         }
@@ -259,11 +281,14 @@ export class Board<T> {
         }
 
         for (let col = 0; col < this.width; col++) {
-            if (this.board[0][col] === undefined)
+            if (this.board[0][col] === undefined) {
                 this.board[0][col] = this.generator.next();
+            }
         }
 
-        while (this.findMatches());
+        while (this.findMatches()) {
+            this.doMatch();
+        };
     }
 
 }
