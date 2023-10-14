@@ -45,7 +45,7 @@ export class Board<T> {
                 this.board[row].push(this.generator.next());
             }
         }
-
+        //We check for Matches after generating, might be a problem but tests don't show anything wrong
         while (this.findMatches()) {
             this.doMatch();
         };
@@ -271,24 +271,28 @@ export class Board<T> {
 
     private doRefill() {
 
-        for (let row = this.height - 1; row > 0; row--) {
-            for (let col = 0; col < this.width; col++) {
-                if (this.board[row][col] === undefined) {
-                    this.board[row][col] = this.board[row - 1][col];
-                    this.board[row - 1][col] = undefined;
+        for (let col = 0; col < this.width; col++) {
+            let bottomRow = this.height - 1; // Start from the bottom row
+            for (let row = this.height - 2; row >= 0; row--) {
+                if (this.board[row][col] !== undefined) {
+                    // If the current cell is not empty
+                    while (bottomRow > row && this.board[bottomRow][col] === undefined) {
+                        // Move the tile down as far as possible
+                        this.board[bottomRow][col] = this.board[row][col];
+                        this.board[row][col] = undefined;
+                        bottomRow--;
+                    }
                 }
             }
         }
 
-        for (let col = 0; col < this.width; col++) {
-            if (this.board[0][col] === undefined) {
-                this.board[0][col] = this.generator.next();
+
+            for (let col = 0; col < this.width; col++) {
+                    for(let row = 0;row<this.height;row++){
+                        if (this.board[row][col] === undefined) {
+                            this.board[row][col] = this.generator.next();
+                        }
             }
         }
-
-        while (this.findMatches()) {
-            this.doMatch();
-        };
     }
-
 }

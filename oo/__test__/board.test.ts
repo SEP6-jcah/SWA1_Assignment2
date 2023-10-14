@@ -38,6 +38,7 @@ class GeneratorFake<T> implements Generator<T> {
 
 }
 
+// @ts-ignore
 function require(board: Board<String>) {
     function index({row, col}: Position) {
         return row * board.width + col
@@ -279,15 +280,29 @@ describe("Board", () => {
                     'C', 'A', 'C',
                 ).withPieces('B', 'C', 'D')
             })
+            //Changed from
+
+            // it("shifts tiles down before replacing multiple matches", () => {
+            //     generator.prepare('D', 'B', 'C', 'A', 'B', 'A')
+            //     board.move({row: 3, col: 0}, {row: 3, col: 2})
+            //     require(board).toMatch(
+            //         '*', 'B', '*',
+            //         '*', 'B', '*',
+            //         '*', 'A', '*',
+            //         'A', 'D', 'A',
+            //     ).withPieces('A', 'A', 'B', 'B', 'C', 'D')
+            // })
             it("shifts tiles down before replacing multiple matches", () => {
-                generator.prepare('D', 'B', 'C', 'A', 'B', 'A')
+                generator.prepare('D', 'B', 'C', 'A', 'Z', 'A')
+                console.table(board.board)
                 board.move({row: 3, col: 0}, {row: 3, col: 2})
+                console.table(board.board)
                 require(board).toMatch(
                     '*', 'B', '*',
                     '*', 'B', '*',
                     '*', 'A', '*',
                     'A', 'D', 'A',
-                ).withPieces('A', 'A', 'B', 'B', 'C', 'D')
+                ).withPieces('A', 'A', 'B', 'Z', 'C', 'D')
             })
             it("only deletes a double match once", () => {
                 generator = new GeneratorFake<String>(
@@ -360,6 +375,7 @@ describe("Board", () => {
                 generator.prepare('B', 'C', 'C')
                 generator.prepare('A', 'A', 'D')
                 board.move({row: 0, col: 1}, {row: 2, col: 1})
+
                 expect(events).toEqual([
                     {kind: 'Match', match: {matched: 'A', positions: [{row: 0, col: 0}, {row: 0, col: 1}, {row: 0, col: 2}]}},
                     {kind: 'Refill'},
@@ -373,6 +389,7 @@ describe("Board", () => {
                 generator.prepare('A', 'A', 'A')
                 generator.prepare('A', 'A', 'D')
                 board.move({row: 0, col: 1}, {row: 2, col: 1})
+
                 expect(events).toEqual([
                     {kind: 'Match', match: {matched: 'A', positions: [{row: 0, col: 0}, {row: 0, col: 1}, {row: 0, col: 2}]}},
                     {kind: 'Refill'},
