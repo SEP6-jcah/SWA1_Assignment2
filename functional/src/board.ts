@@ -53,17 +53,101 @@ export function positions<T>(board: Board<T>): Position[] {
 }
 
 export function piece<T>(board: Board<T>, p: Position): T | undefined {
-  const { row, col } = p;
+    const { row, col } = p;
+  
+    if (row >= 0 && row < board.height && col >= 0 && col < board.width) {
+      return board.data[row][col];
+    }
+  
+    return undefined;
+  }
+  
 
-  if (row >= 0 && row < board.height && col >= 0 && col < board.width) {
-    return board.data[row][col];
+  export function canMove<T>(board: Board<T>, first: Position, second: Position): boolean {
+    const firstPiece = piece(board, first);
+    const secondPiece = piece(board, second);
+  
+    if (firstPiece === undefined || secondPiece === undefined || firstPiece === secondPiece){    
+      return false;
+    }
+  
+    if (first.row === second.row || first.col === second.col) {
+      swap(board, first, second);
+  
+      const check1 = checkColumnMatch(board, first, secondPiece);
+      const check2 = checkColumnMatch(board, second, firstPiece);
+      const check3 = checkRowMatch(board, first, secondPiece);
+      const check4 = checkRowMatch(board, second, firstPiece);
+  
+      swap(board, first, second);
+  
+      if (check1 || check2 || check3 || check4) {
+        return true;
+      }
+    }
+  
+    return false;
+  }
+  
+
+function swap<T>(board: Board<T>, first: Position, second: Position): void {
+  const firstPiece = piece(board, first);
+  const secondPiece = piece(board, second);
+
+  board.data[first.row][first.col] = secondPiece;
+  board.data[second.row][second.col] = firstPiece;
+}
+
+function checkColumnMatch<T>(board: Board<T>, position: Position, testPiece: T): boolean {
+  const col = position.col;
+  const row = position.row;
+
+  for (let i = col - 2; i <= col + 2; i++) {
+    if (i >= 0 && i + 2 < board.width) {
+      const position1: Position = { row, col: i };
+      const position2: Position = { row, col: i + 1 };
+      const position3: Position = { row, col: i + 2 };
+
+      const piece1 = piece(board, position1);
+      const piece2 = piece(board, position2);
+      const piece3 = piece(board, position3);
+
+      if (piece1 === testPiece && piece2 === testPiece && piece3 === testPiece) {
+        return true;
+      }
+    }
   }
 
-  return undefined;
+  return false;
 }
 
-export function canMove<T>(board: Board<T>, first: Position, second: Position): boolean {
+function checkRowMatch<T>(board: Board<T>, position: Position, testPiece: T): boolean {
+  const col = position.col;
+  const row = position.row;
+
+  for (let i = row - 2; i <= row + 2; i++) {
+    if (i >= 0 && i + 2 < board.height) {
+      const position1: Position = { row: i, col };
+      const position2: Position = { row: i + 1, col };
+      const position3: Position = { row: i + 2, col };
+
+      const piece1 = piece(board, position1);
+      const piece2 = piece(board, position2);
+      const piece3 = piece(board, position3);
+
+      if (piece1 === testPiece && piece2 === testPiece && piece3 === testPiece) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
+
+
 
 export function move<T>(generator: Generator<T>, board: Board<T>, first: Position, second: Position): MoveResult<T> {
+  if (!this.canMove(first, second)) {
+    return false;
+  }
 }
