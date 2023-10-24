@@ -303,7 +303,7 @@ describe("Board", () => {
                     'C', 'B', 'D',
                 )
                 board = new Board(generator, 3, 4)
-                generator.prepare('Q', 'W', 'E', 'R', 'T','Y','Z','O','Y','Z','O')
+                generator.prepare('1', '2', '3', '4', '5')
                 console.table(board.board)
                 board.move({row: 0, col: 1}, {row: 2, col: 1})
                 console.table(board.board)

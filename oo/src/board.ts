@@ -271,23 +271,20 @@ export class Board<T> {
     private doRefill() {
 
         for (let col = 0; col < this.width; col++) {
-            let bottomRow = this.height - 1; // Start from the bottom row
             for (let row = this.height - 1; row >= 0; row--) {
                 if (this.board[row][col] === undefined) {
                     // If the current cell is not empty
+                    let index = row - 1;
 
-                    for (let row2 = row-1; row2 >= 0 ; row2--) {
-                        if(this.board[row2][col] !== undefined){
-                            this.board[row][col] = this.board[row2][col];
-                            this.board[row2][col] =undefined;
-                        }
+                    while (index >= 0 && this.board[index][col] === undefined) {
+                        index--;
                     }
-                    // while (bottomRow > row && this.board[bottomRow][col] === undefined) {
-                    //     // Move the tile down as far as possible
-                    //     this.board[bottomRow][col] = this.board[row][col];
-                    //     this.board[row][col] = undefined;
-                    //     bottomRow--;
-                    //}
+
+                    if (index >= 0) {
+                        // Move the tile down
+                        this.board[row][col] = this.board[index][col];
+                        this.board[index][col] = undefined;
+                    }
                 }
             }
         }
