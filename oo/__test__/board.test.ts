@@ -272,7 +272,9 @@ describe("Board", () => {
             })
             it("shifts tiles down before replacing", () => {
                 generator.prepare('B', 'C', 'D')
+
                 board.move({row: 2, col: 0}, {row: 3, col: 0})
+
                 require(board).toMatch(
                     '*', '*', '*',
                     'A', 'B', 'A',
@@ -280,29 +282,18 @@ describe("Board", () => {
                     'C', 'A', 'C',
                 ).withPieces('B', 'C', 'D')
             })
-            //Changed from
-
-            // it("shifts tiles down before replacing multiple matches", () => {
-            //     generator.prepare('D', 'B', 'C', 'A', 'B', 'A')
-            //     board.move({row: 3, col: 0}, {row: 3, col: 2})
-            //     require(board).toMatch(
-            //         '*', 'B', '*',
-            //         '*', 'B', '*',
-            //         '*', 'A', '*',
-            //         'A', 'D', 'A',
-            //     ).withPieces('A', 'A', 'B', 'B', 'C', 'D')
-            // })
             it("shifts tiles down before replacing multiple matches", () => {
-                generator.prepare('D', 'B', 'C', 'A', 'Z', 'A')
-                console.table(board.board)
+                //generator.prepare('D', 'B', 'C', 'A', 'B', 'A')
+                generator.prepare('1', '2', '3', '4', '5', '6')
+
                 board.move({row: 3, col: 0}, {row: 3, col: 2})
-                console.table(board.board)
+
                 require(board).toMatch(
                     '*', 'B', '*',
                     '*', 'B', '*',
                     '*', 'A', '*',
                     'A', 'D', 'A',
-                ).withPieces('A', 'A', 'B', 'Z', 'C', 'D')
+                ).withPieces('1', '2', '3', '4', '5', '6')
             })
             it("only deletes a double match once", () => {
                 generator = new GeneratorFake<String>(
@@ -312,16 +303,19 @@ describe("Board", () => {
                     'C', 'B', 'D',
                 )
                 board = new Board(generator, 3, 4)
-                generator.prepare('D', 'C', 'B', 'B', 'A')
+                generator.prepare('Q', 'W', 'E', 'R', 'T','Y','Z','O','Y','Z','O')
+                console.table(board.board)
                 board.move({row: 0, col: 1}, {row: 2, col: 1})
+                console.table(board.board)
                 require(board).toMatch(
                     '*', '*', '*',
                     'D', '*', 'A',
                     'D', '*', 'C',
                     'C', 'A', 'D',
-                ).withPieces('A', 'B', 'B', 'C', 'D')
+                ).withPieces('1', '2', '3', '4', '5')
             })
         })
+
 
         describe("Refill event", () => {
             let events: BoardEvent<String>[]

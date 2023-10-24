@@ -234,7 +234,7 @@ export class Board<T> {
 
             this.notify({ kind: 'Match', match })
             this.matches.push(match);
-            //this.doMatch(match);
+
 
             return true;
         }
@@ -257,7 +257,6 @@ export class Board<T> {
 
             this.notify({ kind: 'Match', match })
             this.matches.push(match);
-            //this.doMatch(match);
 
             return true;
         }
@@ -273,26 +272,31 @@ export class Board<T> {
 
         for (let col = 0; col < this.width; col++) {
             let bottomRow = this.height - 1; // Start from the bottom row
-            for (let row = this.height - 2; row >= 0; row--) {
-                if (this.board[row][col] !== undefined) {
+            for (let row = this.height - 1; row >= 0; row--) {
+                if (this.board[row][col] === undefined) {
                     // If the current cell is not empty
-                    while (bottomRow > row && this.board[bottomRow][col] === undefined) {
-                        // Move the tile down as far as possible
-                        this.board[bottomRow][col] = this.board[row][col];
-                        this.board[row][col] = undefined;
-                        bottomRow--;
+
+                    for (let row2 = row-1; row2 >= 0 ; row2--) {
+                        if(this.board[row2][col] !== undefined){
+                            this.board[row][col] = this.board[row2][col];
+                            this.board[row2][col] =undefined;
+                        }
                     }
+                    // while (bottomRow > row && this.board[bottomRow][col] === undefined) {
+                    //     // Move the tile down as far as possible
+                    //     this.board[bottomRow][col] = this.board[row][col];
+                    //     this.board[row][col] = undefined;
+                    //     bottomRow--;
+                    //}
                 }
             }
         }
-
-
             for (let col = 0; col < this.width; col++) {
                     for(let row = 0;row<this.height;row++){
                         if (this.board[row][col] === undefined) {
                             this.board[row][col] = this.generator.next();
                         }
-            }
-        }
+                    }
+                }
     }
 }
