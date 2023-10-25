@@ -273,7 +273,7 @@ export class Board<T> {
         for (let col = 0; col < this.width; col++) {
             for (let row = this.height - 1; row >= 0; row--) {
                 if (this.board[row][col] === undefined) {
-                    // If the current cell is not empty
+                    // If the current cell is empty
                     let index = row - 1;
 
                     while (index >= 0 && this.board[index][col] === undefined) {
