@@ -6,7 +6,7 @@ export type Position = {
 }    
 
 export type Match<T> = {
-    matched: T,
+    matched: string,
     positions: Position[]
 }    
 
@@ -18,10 +18,17 @@ export type Board<T> = {
   height: number;
 };
 
-export type Effect<T> = {}
+export type Effect<T> = {
+  kind: 'Match';
+  match: Match<T>;
+} | {
+  kind: 'Refill';
+};
 
-
-export type MoveResult<T> = {}    
+export type MoveResult<T> = {
+  board: Board<T>;
+  effects: Effect<T>;
+};
 
 export function create<T>(generator: Generator<T>, width: number, height: number): Board<T> {
   const board: Board<T> = {
@@ -145,9 +152,109 @@ function checkRowMatch<T>(board: Board<T>, position: Position, testPiece: T): bo
 }
 
 
-
 export function move<T>(generator: Generator<T>, board: Board<T>, first: Position, second: Position): MoveResult<T> {
-  if (!this.canMove(first, second)) {
-    return false;
+  // Initialize an array to store the effects
+  let effects: Effect<T> = {kind: 'Refill'}
+
+  if (!canMove(board, first, second)) {
+    return { board, effects};
+  }
+
+  
+  // Perform the move
+  const updatedBoard = { ...board };
+  swap(updatedBoard, first, second);
+  
+  
+  // While there are matches, keep performing them
+  while (updatedBoard.matches.length > 0) {
+    doMatch(updatedBoard, effects);
+  }
+  
+  return {board, effects}
+}
+
+function doMatch<T>(board: Board<T>, effects: Effect<T>): MoveResult<T>  {
+  for (const match of board.matches) {
+    for (const position of match.positions) {
+      // Clear the piece from the board
+      board.data[position.row][position.col] = undefined;
+    }
+
+    // Add the match effect to the effects array
+    effects = {
+      kind: 'Match',
+      match: { matched: match.matched, positions: match.positions }
+    };
+  }
+
+  // Clear the matches from the board
+  board.matches = [];
+
+  // Notify the refill event
+ // effects = { kind: 'Refill' };
+  //doRefill(board, effects);
+}
+
+function doRefill<T>(board: Board<T>, effects: Effect<T>) {
+  for (let col = 0; col < board.width; col++) {
+    let bottomRow = board.height - 1;
+
+    for (let row = board.height - 2; row >= 0; row--) {
+      if (board.data[row][col] !== undefined) {
+        while (bottomRow > row && board.data[bottomRow][col] === undefined) {
+          // Move the tile down as far as possible
+          board.data[bottomRow][col] = board.data[row][col];
+          board.data[row][col] = undefined;
+          bottomRow--;
+        }
+      }
+    }
+  }
+
+  // Refill any empty cells with new pieces
+  for (let col = 0; col < board.width; col++) {
+    for (let row = 0; row < board.height; row++) {
+      if (board.data[row][col] === undefined) {
+        // Generate a new piece using the generator
+        const newPiece = board.generator.next();
+
+        // Fill the empty cell with the new piece
+        board.data[row][col] = newPiece;
+
+        // Add a Refill effect for the new piece at the specified position
+        effects = {
+          kind: 'Refill'
+        };
+      }
+    }
   }
 }
+
+function findMatches(board: Board<T>): boolean {
+  let colMatch = false;
+  let rowMatch = false;
+  let height = board.height
+  let width = board.width
+
+  for (let row = 0; row < height; row++) {
+      for (let col = 0; col < width - 2; col++) {
+          if (!colMatch) {
+              colMatch = this.findMatchCol(row, col);
+          }
+      }
+  }
+
+  for (let row = 0; row < this.height - 2; row++) {
+      for (let col = 0; col < this.width; col++) {
+          if (!rowMatch) {
+              rowMatch = this.findMatchRow(row, col);
+          }
+      }
+  }
+
+  return colMatch || rowMatch;
+}
+
+
+
