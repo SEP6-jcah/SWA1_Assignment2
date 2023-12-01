@@ -18,28 +18,38 @@ export default class Home extends Component<Props, State> {
   }
 
   componentDidMount() {
-    const userId = sessionStorage.getItem('id');
+    const userStr = sessionStorage.getItem('user');
   
-    if (userId) {
-      UserService.getUserDetails(userId).then(
-        response => {
-          this.setState({
-            content: response.data
-          });
-        },
-        error => {
-          this.setState({
-            content:
-              (error.response && error.response.data) ||
-              error.message ||
-              error.toString()
-          });
-        }
-      );
+    if (userStr !== null) {
+      const userId = (JSON.parse(userStr) as { userId: number })?.userId;
+  
+      if (userId !== undefined) {
+        UserService.getUserDetails(userId).then(
+          response => {
+            this.setState({
+              content: response.data
+            });
+          },
+          error => {
+            this.setState({
+              content:
+                (error.response && error.response.data) ||
+                error.message ||
+                error.toString()
+            });
+          }
+        );
+      } else {
+        console.error('userId not found in user data');
+      }
     } else {
-      console.error('User ID not found in sessionStorage');
+      console.error('User data not found in sessionStorage');
     }
   }
+  
+  
+  
+  
   
 
   render() {
