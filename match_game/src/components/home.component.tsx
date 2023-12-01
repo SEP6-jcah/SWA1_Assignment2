@@ -1,6 +1,7 @@
 import { Component } from "react";
 
 import UserService from "../services/user.service";
+import User from "../model/user";
 
 type Props = {};
 
@@ -18,14 +19,12 @@ export default class Home extends Component<Props, State> {
   }
 
   componentDidMount() {
-    const userStr = sessionStorage.getItem('user');
+    const userSession = sessionStorage.getItem('user');
   
-    if (userStr !== null) {
-      const userId = (JSON.parse(userStr) as { userId: number })?.userId;
-  
-      if (userId !== undefined) {
-        UserService.getUserDetails(userId).then(
+      if (userSession !== undefined) {
+        UserService.getUserDetails(userSession).then(
           response => {
+            console.log(response)
             this.setState({
               content: response.data
             });
@@ -42,12 +41,7 @@ export default class Home extends Component<Props, State> {
       } else {
         console.error('userId not found in user data');
       }
-    } else {
-      console.error('User data not found in sessionStorage');
-    }
-  }
-  
-  
+    } 
   
   
   

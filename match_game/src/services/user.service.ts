@@ -5,9 +5,7 @@ const API_URL = 'http://localhost:9090/';
 
 class UserService {
   async getUsers() {
-    const response = await fetch(API_URL + 'users', {
-      headers: authHeader(),
-    });
+    const response = await fetch(API_URL + 'users');
     if (response.ok) {
       return response.json();
     } else if (response.status === 403) {
@@ -21,8 +19,19 @@ class UserService {
     }
   }
 
-  async getUserDetails(id: number) {
-    const response = await fetch(API_URL + 'users/' + id);
+  async getUserDetails(userSession: string | null) {
+    if (userSession == null) {
+      console.log("User session invalid")
+      return null;
+    }
+    
+    const userId = (JSON.parse(userSession) as { userId: number })?.userId;
+    const userToken = (JSON.parse(userSession) as { token: string })?.token;
+  
+    const response = await fetch(API_URL 
+      + 'users/' + userId 
+      + '?token=' + userToken);
+  
     if (response.ok) {
       return response.json();
     } else if (response.status === 403) {
