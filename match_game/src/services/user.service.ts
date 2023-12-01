@@ -1,11 +1,11 @@
-import authHeader from './auth-header';
 import User from "../model/user";
 
 const API_URL = 'http://localhost:9090/';
 
 class UserService {
-  async getUsers() {
-    const response = await fetch(API_URL + 'users');
+  async getUsers(userSession: string) {
+    const userToken = (JSON.parse(userSession) as { token: string })?.token;
+    const response = await fetch(API_URL + 'users?token=' + userToken);
     if (response.ok) {
       return response.json();
     } else if (response.status === 403) {
@@ -49,7 +49,6 @@ class UserService {
     const response = await fetch(API_URL + 'users/' + user.id, {
       method: 'PATCH',
       headers: {
-        ...authHeader(),
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(user),
