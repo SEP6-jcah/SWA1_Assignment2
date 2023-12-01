@@ -9,11 +9,9 @@ class UserService {
     if (response.ok) {
       return response.json();
     } else if (response.status === 403) {
-      // Handle unauthorized access
       console.error('Unauthorized access to getUsers');
       return null;
     } else {
-      // Handle other error cases
       console.error('Error in getUsers:', response.statusText);
       return null;
     }
@@ -35,18 +33,17 @@ class UserService {
     if (response.ok) {
       return response.json();
     } else if (response.status === 403) {
-      // Handle unauthorized access
       console.error('Unauthorized access to getUserDetails');
       return null;
     } else {
-      // Handle other error cases
       console.error('Error in getUserDetails:', response.statusText);
       return null;
     }
   }
 
-  async updateUserDetails(user: User) {
-    const response = await fetch(API_URL + 'users/' + user.id, {
+  async updateUserDetails(user: User, userSession: string) {
+    const userToken = (JSON.parse(userSession) as { token: string })?.token;
+    const response = await fetch(API_URL + 'users/' + user.id + '?token=' + userToken, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -56,11 +53,9 @@ class UserService {
     if (response.ok) {
       return response.json();
     } else if (response.status === 403) {
-      // Handle unauthorized access
       console.error('Unauthorized access to updateUserDetails');
       return null;
     } else {
-      // Handle other error cases
       console.error('Error in updateUserDetails:', response.statusText);
       return null;
     }
