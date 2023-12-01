@@ -25,8 +25,9 @@ export default class Home extends Component<Props, State> {
         UserService.getUserDetails(userSession).then(
           response => {
             console.log(response)
+            let user = response
             this.setState({
-              content: response.data
+              content: response.username
             });
           },
           error => {
