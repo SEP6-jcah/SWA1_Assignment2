@@ -30,8 +30,8 @@ export default class Login extends Component<Props, State> {
     };
   }
 
-  componentDidMount() {
-    const currentUser = AuthService.getCurrentUser();
+  async componentDidMount() {
+    const currentUser = await AuthService.getCurrentUser();
 
     if (currentUser) {
       this.setState({ redirect: "/profile" });

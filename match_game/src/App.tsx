@@ -33,17 +33,18 @@ class App extends Component<Props, State> {
     };
   }
 
-  componentDidMount() {
-    const user = AuthService.getCurrentUser();
-
+  async componentDidMount() {
+    const user = await AuthService.getCurrentUser();
+  
     if (user) {
       this.setState({
-        currentUser: user
+        currentUser: user as User
       });
     }
-
+  
     EventBus.on("logout", this.logOut);
   }
+  
 
   componentWillUnmount() {
     EventBus.remove("logout", this.logOut);

@@ -42,8 +42,15 @@ class AuthService {
   }
 
   async logout() {
-    const token = localStorage.getItem("token");
+    const userStr = sessionStorage.user;
 
+    if (!userStr) {
+      console.error("No user data found"+userStr);
+      return null;
+    }
+
+    const { userId, token } = JSON.parse(userStr);
+    
     if (!token) {
       console.error("No token");
       return null;
@@ -68,11 +75,36 @@ class AuthService {
   }
 
 
-  getCurrentUser() {
-    const userStr = localStorage.getItem("user");
-    if (userStr) return JSON.parse(userStr);
+  async getCurrentUser() {
+    try {
+      const userStr = sessionStorage.user;
 
-    return null;
+      if (!userStr) {
+        console.error("No user data found"+userStr);
+        return null;
+      }
+
+      const { userId, token } = JSON.parse(userStr);
+
+      if (!userId || !token) {
+        console.error("Invalid user data");
+        return null;
+      }
+
+      const userEndpoint = `${API_URL}users/${userId}?token=${encodeURIComponent(token)}`;
+      const response = await fetch(userEndpoint);
+
+      if (response.ok) {
+        const user = await response.json();
+        return user || null;
+      } else {
+        console.error("Error fetching user details:", response.statusText);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+      return null;
+    }
   }
 }
 
