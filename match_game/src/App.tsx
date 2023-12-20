@@ -10,14 +10,14 @@ import Login from "./components/login.component";
 import Register from "./components/register.component";
 import Home from "./components/home.component";
 import Profile from "./components/profile.component";
+import Game from "./components/game.component";
 
 import EventBus from "./common/EventBus";
+import HighScores from "./components/highscores.component";
 
 type Props = {};
 
 type State = {
-  showModeratorBoard: boolean,
-  showAdminBoard: boolean,
   currentUser: User | undefined
 }
 
@@ -27,8 +27,6 @@ class App extends Component<Props, State> {
     this.logOut = this.logOut.bind(this);
 
     this.state = {
-      showModeratorBoard: false,
-      showAdminBoard: false,
       currentUser: undefined,
     };
   }
@@ -53,14 +51,12 @@ class App extends Component<Props, State> {
   logOut() {
     AuthService.logout();
     this.setState({
-      showModeratorBoard: false,
-      showAdminBoard: false,
       currentUser: undefined,
     });
   }
 
   render() {
-    const { currentUser, showModeratorBoard, showAdminBoard } = this.state;
+    const { currentUser } = this.state;
 
     return (
       <div>
@@ -72,26 +68,18 @@ class App extends Component<Props, State> {
               </Link>
             </li>
 
-            {showModeratorBoard && (
+            {currentUser && (
               <li className="nav-item">
-                <Link to={"/mod"} className="nav-link">
-                  Moderator Board
-                </Link>
-              </li>
-            )}
-
-            {showAdminBoard && (
-              <li className="nav-item">
-                <Link to={"/admin"} className="nav-link">
-                  Admin Board
+                <Link to={"/game"} className="nav-link">
+                  Game
                 </Link>
               </li>
             )}
 
             {currentUser && (
               <li className="nav-item">
-                <Link to={"/user"} className="nav-link">
-                  User
+                <Link to={"/highscores"} className="nav-link">
+                  High Scores
                 </Link>
               </li>
             )}
@@ -101,12 +89,12 @@ class App extends Component<Props, State> {
             <div className="navbar-nav ml-auto">
               <li className="nav-item">
                 <Link to={"/profile"} className="nav-link">
-                  {currentUser.username}
+                  Profile
                 </Link>
               </li>
               <li className="nav-item">
                 <a href="/login" className="nav-link" onClick={this.logOut}>
-                  LogOut
+                  Log out
                 </a>
               </li>
             </div>
@@ -120,7 +108,7 @@ class App extends Component<Props, State> {
 
               <li className="nav-item">
                 <Link to={"/register"} className="nav-link">
-                  Sign Up
+                  Register
                 </Link>
               </li>
             </div>
@@ -134,6 +122,8 @@ class App extends Component<Props, State> {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/game" element={<Game/>} />
+            <Route path="/highscores" element={<HighScores/>} />
           </Routes>
         </div>
       </div>
