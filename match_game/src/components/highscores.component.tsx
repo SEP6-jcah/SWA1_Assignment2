@@ -28,9 +28,9 @@ interface HighScoresState {
       const { highScores } = this.state;
   
       return (
-        <div>
+        <div className='center'>
           <h1>High Scores</h1>
-          <ul>
+          <ul className='jumbotron'>
             {highScores.map((game) => (
               <li key={game.id}>
                 {game.user}: {game.score}

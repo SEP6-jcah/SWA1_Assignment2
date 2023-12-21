@@ -16,7 +16,7 @@ class GameService {
     const response = await fetch(`${API_URL}/games?token=${token}`, {
       method: 'POST',
     });
-    if (response.ok) {
+    if (response.status === 201) {
       return response.json();
     } else {
       throw new Error('Failed to start a new game');
