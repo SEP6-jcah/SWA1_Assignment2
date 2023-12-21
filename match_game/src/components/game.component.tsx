@@ -101,11 +101,11 @@ class Game extends Component<Props, State> {
     const { score, board, selectedPosition, isGameOver, highScores } = this.state;
 
     return (
-      <div>
+      <div className='center'>
         <h1>Match 3</h1>
-        <p>Score: {score}</p>
+        <h4>Score: {score}</h4>
         {board && !isGameOver && (
-          <div className="game-board-container">
+          <div className='jumbotron'>
             {Array.from({ length: board.height }).map((_, row) => (
               <div key={row} className="board-row">
                 {Array.from({ length: board.width }).map((_, col) => (
