@@ -121,7 +121,7 @@ class Game extends Component<Props, State> {
             ))}
           </div>
         )}
-        {isGameOver && <p>Game Over! Your final score is {score}.</p>}
+        {isGameOver && <><br/><br/><h1 style={{ color: "red" }}>Game Over!</h1></>}
       </div>
     );
   }
