@@ -3,4 +3,5 @@
     password?: string;
     id?: number;
     admin?: boolean;
+    bio?: string; 
   }

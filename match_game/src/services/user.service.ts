@@ -51,7 +51,7 @@ class UserService {
       body: JSON.stringify(user),
     });
     if (response.ok) {
-      return response.json();
+      return user;
     } else if (response.status === 403) {
       console.error('Unauthorized access to updateUserDetails');
       return null;
