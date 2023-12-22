@@ -3,7 +3,19 @@ import GameService from '../services/game.service';
 import AuthService from '../services/auth.service';
 import User from "../model/user";
 
-    highScores: Array<{ id: number; user: string; score: number }>;
+type State = {
+  currentUser: User;
+  highScores: Array<{ id: number; user: string; score: number; completed: boolean }>;
+};
+
+class HighScores extends Component<{}, State> {
+
+  constructor(props: {}) {
+    super(props);
+    this.state = {
+      currentUser: {} as User,
+      highScores: [],
+    };
   }
 
   async componentDidMount() {
