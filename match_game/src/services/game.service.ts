@@ -1,9 +1,12 @@
+import GameDTO from "../model/gameDTO";
+
 const API_URL = 'http://localhost:9090';
+const { userId, token } = JSON.parse(sessionStorage.user);
 
 class GameService {
 
 
-  async getAllGames(token: string): Promise<any> {
+  async getAllGames(): Promise<any> {
     const response = await fetch(`${API_URL}/games?token=${token}`);
     if (response.ok) {
       return response.json();
@@ -12,7 +15,8 @@ class GameService {
     }
   }
 
-  async startNewGame(token: string): Promise<any> {
+  async startNewGame(): Promise<any> {
+
     const response = await fetch(`${API_URL}/games?token=${token}`, {
       method: 'POST',
     });
@@ -32,13 +36,13 @@ class GameService {
     }
   }
 
-  async updateGame(token: string, gameId: string, update: any): Promise<void> {
-    const response = await fetch(`${API_URL}/games/${gameId}?token=${token}`, {
+  async updateGame(game: GameDTO): Promise<void> {
+    const response = await fetch(`${API_URL}/games/${game.id}?token=${token}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(update),
+      body: JSON.stringify(game),
     });
 
     if (!response.ok) {

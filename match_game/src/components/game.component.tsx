@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import { Board, BoardEvent, Match, Position } from '../model/oo/board';
 import GameService from '../services/game.service';
+import GameDTO from '../model/gameDTO'
 
 type Props = {};
 
 type State = {
+  game: GameDTO | null,
   score: number;
   board: Board<string> | null;
   selectedPosition: Position | null;
   turns: number;
   isGameOver: boolean;
-  highScores: any[]; 
 };
 
 class Game extends Component<Props, State> {
@@ -18,25 +19,17 @@ class Game extends Component<Props, State> {
     super(props);
 
     this.state = {
+      game: null,
       score: 0,
       board: null,
       selectedPosition: null,
       turns: 0,
       isGameOver: false,
-      highScores: [],
     };
   }
 
-  async componentDidMount() {
-    const { userId, token } = JSON.parse(sessionStorage.user);
-
-    try {
-      const games = await GameService.getAllGames(token);
-      this.setState({ highScores: games });
-    } catch (error) {
-      console.error('Failed to fetch high scores', error);
-    }
-
+  async componentDidMount() {    
+    this.setState({ game: await GameService.startNewGame() });
     this.initializeGame();
   }
 
@@ -61,6 +54,7 @@ class Game extends Component<Props, State> {
         this.setState((prevState) => ({ turns: prevState.turns + 1 }));
         if (this.isGameOver()) {
           this.setState({ isGameOver: true });
+          this.state.game!.completed = true;
         }
       }
     };
@@ -80,7 +74,7 @@ class Game extends Component<Props, State> {
   handleBoardClick = (position: Position): void => {
     const { selectedPosition, board, isGameOver } = this.state;
 
-    if (isGameOver) {
+    if (isGameOver && this.state.game) {
       return;
     }
 
@@ -98,7 +92,7 @@ class Game extends Component<Props, State> {
   }
 
   render() {
-    const { score, board, selectedPosition, isGameOver, highScores } = this.state;
+    const { score, board, selectedPosition, isGameOver} = this.state;
 
     return (
       <div className='center'>
@@ -125,6 +119,19 @@ class Game extends Component<Props, State> {
       </div>
     );
   }
+
+  async componentWillUnmount(){
+    try {
+      if(this.state.game) {
+        this.state.game.score = this.state.score;
+        await GameService.updateGame(this.state.game!);
+        console.log('Game updated: ', this.state.game!)
+      }
+    } catch (error) {
+      console.error('Failed to update game', error);
+    }
+  }
+  
 }
 
 export default Game;
