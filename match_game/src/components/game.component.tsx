@@ -2,15 +2,21 @@ import React, { Component } from 'react';
 import { Board, BoardEvent, Match, Position } from '../model/oo/board';
 import GameService from '../services/game.service';
 import GameDTO from '../model/gameDTO'
+import { RootState } from '../common/store';
+import { connect } from 'react-redux';
+import { game, increaseScore, increaseTurns, setGame } from '../common/slices/game.slice';
 
-type Props = {};
+type Props = {
+  setGame: (game: GameDTO) => void;
+  increaseScore: () => void;
+  increaseTurns: () => void;
+  currentGame: GameDTO;
+  turns: number;
+};
 
 type State = {
-  game: GameDTO | null,
-  score: number;
   board: Board<string> | null;
   selectedPosition: Position | null;
-  turns: number;
   isGameOver: boolean;
 };
 
@@ -19,17 +25,15 @@ class Game extends Component<Props, State> {
     super(props);
 
     this.state = {
-      game: null,
-      score: 0,
       board: null,
       selectedPosition: null,
-      turns: 0,
       isGameOver: false,
     };
   }
 
   async componentDidMount() {    
-    this.setState({ game: await GameService.startNewGame() });
+    const game: GameDTO = await GameService.startNewGame();
+    this.props.setGame(game)
     this.initializeGame();
   }
 
@@ -47,14 +51,17 @@ class Game extends Component<Props, State> {
 
     const handleBoardEvent = (event: BoardEvent<string>) => {
       if (event.kind === 'Match') {
-        this.setState((prevState) => ({ score: prevState.score + 1 }));
+        this.props.increaseScore();
         console.log(`Match event: matched ${event.match.matched} at positions ${JSON.stringify(event.match.positions)}`);
       } else if (event.kind === 'Refill') {
         console.log('Refill event');
-        this.setState((prevState) => ({ turns: prevState.turns + 1 }));
+        this.props.increaseTurns();
         if (this.isGameOver()) {
           this.setState({ isGameOver: true });
-          this.state.game!.completed = true;
+          this.props.setGame({
+            ...this.props.currentGame,
+            completed: true
+          })
         }
       }
     };
@@ -74,7 +81,7 @@ class Game extends Component<Props, State> {
   handleBoardClick = (position: Position): void => {
     const { selectedPosition, board, isGameOver } = this.state;
 
-    if (isGameOver && this.state.game) {
+    if (isGameOver && this.props.currentGame) {
       return;
     }
 
@@ -88,16 +95,17 @@ class Game extends Component<Props, State> {
 
   isGameOver(): boolean {
     // Check if the number of turns reaches 5
-    return this.state.turns >= 5;
+    return this.props.turns >= 5;
   }
 
   render() {
-    const { score, board, selectedPosition, isGameOver} = this.state;
+    const { board, selectedPosition, isGameOver} = this.state;
+    const { currentGame } = this.props; 
 
     return (
       <div className='center'>
         <h1>Match 3</h1>
-        <h4>Score: {score}</h4>
+        <h4>Score: {currentGame.score}</h4>
         {board && !isGameOver && (
           <div className='jumbotron'>
             {Array.from({ length: board.height }).map((_, row) => (
@@ -121,11 +129,12 @@ class Game extends Component<Props, State> {
   }
 
   async componentWillUnmount(){
+    const { currentGame } = this.props; 
+
     try {
-      if(this.state.game) {
-        this.state.game.score = this.state.score;
-        await GameService.updateGame(this.state.game!);
-        console.log('Game updated: ', this.state.game!)
+      if(currentGame) {
+        await GameService.updateGame(currentGame);
+        console.log('Game updated: ', currentGame)
       }
     } catch (error) {
       console.error('Failed to update game', error);
@@ -134,4 +143,17 @@ class Game extends Component<Props, State> {
   
 }
 
-export default Game;
+const mapDispatchToProps = {
+  setGame,
+  increaseScore,
+  increaseTurns,
+};
+
+const mapStateToProps = (state: RootState) => {
+  return{
+    currentGame: state.game.currentGame as GameDTO,
+    turns: state.game.turns as number,
+  }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Game);
