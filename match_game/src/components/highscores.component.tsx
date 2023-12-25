@@ -1,26 +1,30 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import GameService from '../services/game.service';
-import AuthService from '../services/auth.service';
+
 import User from "../model/user";
 
-type State = {
+import { connect } from "react-redux";
+import { RootState } from "../common/store";
+
+type Props = {
   currentUser: User;
+};
+
+type State = {
   highScores: Array<{ id: number; user: string; score: number; completed: boolean }>;
 };
 
-class HighScores extends Component<{}, State> {
-
-  constructor(props: {}) {
+class HighScores extends Component<Props, State> {
+  constructor(props: Props) {
     super(props);
+
     this.state = {
-      currentUser: {} as User,
       highScores: [],
     };
   }
 
   async componentDidMount() {
     try {
-      const user = await AuthService.getCurrentUser();
       const allGames = await GameService.getAllGames();
       
       const filteredGames = allGames
@@ -28,14 +32,15 @@ class HighScores extends Component<{}, State> {
   
       const orderedHighscores = filteredGames.sort((a: any, b: any) => b.score - a.score); // Re-order highest to lowest
   
-      this.setState({ currentUser: user, highScores: orderedHighscores });
+      this.setState({ highScores: orderedHighscores });
     } catch (error) {
       console.error('Failed to fetch high scores', error);
     }
   }
 
   render() {
-    const { currentUser, highScores } = this.state;
+    const currentUser = this.props.currentUser;
+    const { highScores } = this.state;
 
     const top10HighScores = highScores.slice(0, 10);
     
@@ -93,4 +98,11 @@ class HighScores extends Component<{}, State> {
   }
 }
 
-export default HighScores;
+
+const mapStateToProps = (state: RootState) => {
+  return{
+    currentUser: state.user.currentUser
+  }
+};
+
+export default connect(mapStateToProps)(HighScores);

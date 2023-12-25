@@ -14,6 +14,7 @@ export const userSlice = createSlice({
       },
       resetUser: (state) => {
         state.currentUser = {} as User;
+        sessionStorage.clear();
       },
       setUserToken: (state, action: PayloadAction<string>) => {
         state.token = action.payload;

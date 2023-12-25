@@ -1,4 +1,4 @@
-import { Component, ChangeEvent } from "react";
+import { Component } from "react";
 import UserService from "../services/user.service";
 import { setUser } from '../common/slices/user.slice'
 

@@ -27,7 +27,7 @@ class AuthService {
       return newUser;
     } catch (error) {
       console.error('Error registering user:', error);
-      throw error; // Propagate the error up the call stack
+      throw error; 
     }
   }
   
@@ -40,11 +40,16 @@ class AuthService {
       body: JSON.stringify(user),
     };
 
-    const response = await fetch(API_URL + 'login', requestOptions);
-    const data = await response.json();
+    try {
+      const response = await fetch(API_URL + 'login', requestOptions);
+      const data = await response.json();
 
-    sessionStorage.setItem('user', JSON.stringify(data));
-    return data;
+      sessionStorage.setItem('user', JSON.stringify(data));
+      return data;
+    } catch (error) {
+      console.error('Error logging in:', error);
+      throw error; 
+    }
   }
 
   async logout() {
