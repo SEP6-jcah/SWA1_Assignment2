@@ -12,14 +12,14 @@ import Home from "./components/home.component";
 import Profile from "./components/profile.component";
 import Game from "./components/game.component";
 
-import EventBus from "./common/EventBus";
 import HighScores from "./components/highscores.component";
 import { connect } from "react-redux";
 import { RootState } from "./common/store";
-import { setUser, setUserToken } from "./common/slices/user.slice";
+import { setUser, resetUser, setUserToken } from "./common/slices/user.slice";
 
 type Props = {
   setUser: (user: User) => void;
+  resetUser: () => void;
   setUserToken: (token: string) => void;
   currentUser: User;
 };
@@ -46,20 +46,17 @@ class App extends Component<Props, State> {
     } catch (error) {
       console.error("Error fetching user:", error);
     }
-  
-    EventBus.on("logout", this.logOut);
+    
+    document.addEventListener("logout", () => this.logOut());
   }
-  
 
   componentWillUnmount() {
-    EventBus.remove("logout", this.logOut);
+    document.removeEventListener("logout", () => this.logOut());
   }
 
   logOut() {
     AuthService.logout();
-    this.setState({
-      currentUser: undefined,
-    });
+    this.props.resetUser();
   }
 
   render() {
@@ -140,6 +137,7 @@ class App extends Component<Props, State> {
 
 const mapDispatchToProps = {
   setUser,
+  resetUser,
   setUserToken
 };
 
