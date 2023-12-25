@@ -14,11 +14,17 @@ import Game from "./components/game.component";
 
 import EventBus from "./common/EventBus";
 import HighScores from "./components/highscores.component";
+import { connect } from "react-redux";
+import { RootState } from "./common/store";
+import { setUser, setUserToken } from "./common/slices/user.slice";
 
-type Props = {};
+type Props = {
+  setUser: (user: User) => void;
+  setUserToken: (token: string) => void;
+  currentUser: User;
+};
 
 type State = {
-  currentUser: User | undefined
 }
 
 class App extends Component<Props, State> {
@@ -32,12 +38,13 @@ class App extends Component<Props, State> {
   }
 
   async componentDidMount() {
-    const user = await AuthService.getCurrentUser();
-  
-    if (user) {
-      this.setState({
-        currentUser: user as User
-      });
+    try {
+      this.props.setUser(await AuthService.getCurrentUser());
+      const userStr = sessionStorage.user;
+      const { userId, token } = JSON.parse(userStr);
+      this.props.setUserToken(token)
+    } catch (error) {
+      console.error("Error fetching user:", error);
     }
   
     EventBus.on("logout", this.logOut);
@@ -56,7 +63,7 @@ class App extends Component<Props, State> {
   }
 
   render() {
-    const { currentUser } = this.state;
+    const { currentUser } = this.props;
 
     return (
       <div>
@@ -131,4 +138,15 @@ class App extends Component<Props, State> {
   }
 }
 
-export default App;
+const mapDispatchToProps = {
+  setUser,
+  setUserToken
+};
+
+const mapStateToProps = (state: RootState) => {
+  return{
+    currentUser: state.user.currentUser,
+  }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

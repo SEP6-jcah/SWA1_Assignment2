@@ -1,15 +1,17 @@
-import React, { Component, ChangeEvent } from "react";
-import { Navigate } from "react-router-dom";
-import AuthService from "../services/auth.service";
+import { Component, ChangeEvent } from "react";
 import UserService from "../services/user.service";
-import User from "../model/user";
+import { setUser } from '../common/slices/user.slice'
 
-type Props = {};
+import User from "../model/user";
+import { connect } from "react-redux";
+import { RootState } from "../common/store";
+
+type Props = {
+  setUser: (user: User) => void;
+  currentUser: User;
+};
 
 type State = {
-  redirect: string | null;
-  userReady: boolean;
-  currentUser: User;
   bioUpdateError: string;
   isEditingBio: boolean;
 };
@@ -19,39 +21,17 @@ class Profile extends Component<Props, State> {
     super(props);
 
     this.state = {
-      redirect: null,
-      userReady: false,
-      currentUser: {} as User,
       bioUpdateError: "",
       isEditingBio: false,
     };
   }
-
-  async componentDidMount() {
-    const currentUser = await AuthService.getCurrentUser();
-
-    if (!currentUser) {
-      this.setState({ redirect: "/home" });
-    } else {
-      this.setState({ currentUser, userReady: true });
-    }
-  }
-
-  handleBioChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    const { currentUser } = this.state;
-    const updatedUser: User = {
-      ...currentUser,
-      bio: event.target.value,
-    };
-    this.setState({ currentUser: updatedUser });
-  };
 
   handleEditBioToggle = () => {
     this.setState((prevState) => ({ isEditingBio: !prevState.isEditingBio }));
   };
 
   handleUpdateBio = async () => {
-    const { currentUser } = this.state;
+    const { currentUser } = this.props;
 
     try {
       const updatedUserData = await UserService.updateUserDetails(
@@ -60,15 +40,10 @@ class Profile extends Component<Props, State> {
       );
 
       if (updatedUserData) {
-        this.setState({
-          currentUser: updatedUserData,
-          isEditingBio: false,
-        });
-      } else {
-        this.setState({
-          bioUpdateError: "Failed to update bio",
-        });
+        this.setState({isEditingBio: false});
+        this.props.setUser(updatedUserData)
       }
+      
     } catch (error) {
       console.error("Error updating bio:", error);
       this.setState({
@@ -78,15 +53,12 @@ class Profile extends Component<Props, State> {
   };
 
   render() {
-    if (this.state.redirect) {
-      return <Navigate to={this.state.redirect} />;
-    }
+    const { isEditingBio } = this.state;
+    const { currentUser } = this.props; 
 
-    const { currentUser, isEditingBio } = this.state;
 
     return (
       <div className="container">
-        {this.state.userReady && (
           <div>
             <header className="jumbotron">
               <h3>
@@ -100,7 +72,13 @@ class Profile extends Component<Props, State> {
               <h3>Bio:</h3>
 
               {isEditingBio ? (
-                <textarea className="jumbotron" value={currentUser.bio} onChange={this.handleBioChange}/>
+                <textarea className="jumbotron" 
+                value={currentUser.bio} 
+                onChange={ event => this.props.setUser({
+                  ...currentUser,
+                  bio: event.target.value,
+                  })
+                }/>
               ) : (
                 <p className="jumbotron">{currentUser.bio}</p>
               )}
@@ -118,10 +96,19 @@ class Profile extends Component<Props, State> {
               <p style={{ color: "red" }}>{this.state.bioUpdateError}</p>
             )}
           </div>
-        )}
       </div>
     );
   }
 }
 
-export default Profile;
+const mapDispatchToProps = {
+  setUser
+};
+
+const mapStateToProps = (state: RootState) => {
+  return{
+    currentUser: state.user.currentUser
+  }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

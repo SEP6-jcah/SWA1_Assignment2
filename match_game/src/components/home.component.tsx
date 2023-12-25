@@ -1,58 +1,39 @@
 import { Component } from "react";
+import { connect } from 'react-redux'
 
-import UserService from "../services/user.service";
+import { RootState } from "../common/store"
 import User from "../model/user";
 
-type Props = {};
 
-type State = {
-  content: string;
-}
+type Props = { 
+  currentUser: User 
+  token: string 
+};
 
-export default class Home extends Component<Props, State> {
+class Home extends Component<Props> {
   constructor(props: Props) {
     super(props);
-
-    this.state = {
-      content: ""
-    };
   }
 
-  componentDidMount() {
-    const userSession = sessionStorage.getItem('user');
-  
-      if (userSession !== undefined) {
-        UserService.getUserDetails(userSession).then(
-          response => {
-            console.log(response)
-            this.setState({
-              content: response.username
-            });
-          },
-          error => {
-            this.setState({
-              content:
-                (error.response && error.response.data) ||
-                error.message ||
-                error.toString()
-            });
-          }
-        );
-      } else {
-        console.error('userId not found in user data');
-      }
-    } 
-  
-  
-  
-
   render() {
+    const { currentUser, token } = this.props; 
+    
     return (
       <div className="container">
         <header className="jumbotron">
-          <h3>{this.state.content}</h3>
+          <h3>Welcome, {currentUser.username}</h3>
+          <h4>Your session token is: {token}</h4>
         </header>
       </div>
     );
   }
 }
+
+const mapStateToProps = (state: RootState) => {
+  return{
+    currentUser: state.user.currentUser,
+    token: state.user.token,
+  }
+};
+
+export default connect(mapStateToProps )(Home);

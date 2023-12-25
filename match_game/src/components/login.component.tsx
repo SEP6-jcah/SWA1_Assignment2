@@ -16,7 +16,7 @@ type State = {
   message: string
 };
 
-export default class Login extends Component<Props, State> {
+class Login extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.handleLogin = this.handleLogin.bind(this);
@@ -35,7 +35,7 @@ export default class Login extends Component<Props, State> {
 
     if (currentUser) {
       this.setState({ redirect: "/profile" });
-    };
+    }
   }
 
   componentWillUnmount() {
@@ -50,13 +50,12 @@ export default class Login extends Component<Props, State> {
   }
 
   handleLogin(formValue: { username: string; password: string }) {
-    const user: User = formValue
+    const user: User = formValue;
 
     this.setState({
       message: "",
       loading: true
     });
-
 
     AuthService.login(user).then(
       () => {
@@ -150,3 +149,5 @@ export default class Login extends Component<Props, State> {
     );
   }
 }
+
+export default Login;

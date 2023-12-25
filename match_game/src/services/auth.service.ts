@@ -3,9 +3,6 @@ import User from "../model/user";
 const API_URL = "http://localhost:9090/";
 
 class AuthService {
-
-  //TODO: maybe call login after a succesful register so the user
-  //to update sessionStorage. Otherwise User has to manually login after register
   async register(user: User) {
     const requestOptions: RequestInit = {
       method: 'POST',
@@ -14,17 +11,26 @@ class AuthService {
       },
       body: JSON.stringify(user),
     };
-
-    const response = await fetch(API_URL + 'users', requestOptions);
-    const data = await response.json();
-
-    if (data.accessToken) {
-      localStorage.setItem("user", JSON.stringify(data));
+  
+    try {
+      const response = await fetch(API_URL + 'users', requestOptions);
+  
+      if (!response.ok) {
+        throw new Error(`Registration failed: ${response.statusText}`);
+      }
+  
+      const responseData = await response.json();
+      const newUser: User = responseData;
+  
+      await this.login(newUser);
+  
+      return newUser;
+    } catch (error) {
+      console.error('Error registering user:', error);
+      throw error; // Propagate the error up the call stack
     }
-
-    return data;
   }
-
+  
   async login(user: User) {
     const requestOptions: RequestInit = {
       method: 'POST',

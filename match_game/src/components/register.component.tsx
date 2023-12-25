@@ -4,10 +4,12 @@ import * as Yup from "yup";
 
 import AuthService from "../services/auth.service";
 import User from "../model/user";
+import { NavLink, Navigate } from "react-router-dom";
 
 type Props = {};
 
 type State = {
+  redirect: string | null,
   username: string,
   password: string,
   successful: boolean,
@@ -20,11 +22,16 @@ export default class Register extends Component<Props, State> {
     this.handleRegister = this.handleRegister.bind(this);
 
     this.state = {
+      redirect: null,
       username: "",
       password: "",
       successful: false,
       message: ""
     };
+  }
+
+  componentWillUnmount() {
+    window.location.reload();
   }
 
   validationSchema() {
@@ -62,10 +69,9 @@ export default class Register extends Component<Props, State> {
   
     AuthService.register(user).then(
       response => {
-        if (response && response.data && response.data.message) {
+        if (response) {
           this.setState({
-            message: response.data.message,
-            successful: true
+            redirect: "/profile"
           });
         } else {
           console.error('Invalid response structure:', response);
@@ -94,6 +100,9 @@ export default class Register extends Component<Props, State> {
 
   render() {
     const { successful, message } = this.state;
+    if (this.state.redirect) {
+      return <Navigate to={this.state.redirect} />
+    }
 
     const initialValues = {
       username: "",
