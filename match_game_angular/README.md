@@ -1,27 +1,40 @@
 # MatchGameAngular
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.1.1.
+# Assignment 4 - Match Game Angular
 
-## Development server
+## Available Scripts
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+In the project directory, you can run:
 
-## Code scaffolding
+### `npm start`
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Runs the app in the development mode.\
+Open [http://localhost:4200](http://localhost:4200) to view it in the browser.
 
-## Build
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Dependencies
+Endpoints are targeting server from https://github.com/olehougaard/gameserver. Thus, the server must be installed and running to use the app. 
 
-## Running unit tests
+You need to remember to run `npm install` on both projects too
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+There is a dependency on bootstrap for the css that may need to be installed seperately if it is not done so when running `npm install`
+For this you can run `npm install bootstrap@4.6.2`
 
-## Running end-to-end tests
+## Access
+Login with credentials admin/secret or create a new user.
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Database can be seen in the local copy of https://github.com/olehougaard/gameserver/data/data.json when the apps are running
 
-## Further help
+## Higscores
+Highscores are not populated with dummy data so you need to play a few games to see that it works.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+# To DO
+- [ ] Ensure 2-way bindings are used 
+- [ ] make code in service classes more uniform 
+- [ ] remove depenendancy on sessionStoarge and only use redux store for state
+- [ ] fix error message for logging in 
+- [ ] add user settings in game to change board size or letters
+- [ ] make board UX more fun
+- [ ] add games like snake or space invaders 
