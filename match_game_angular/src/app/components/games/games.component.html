@@ -1,0 +1,14 @@
+<div class="jumbotron">
+    <h1>Match 3</h1>
+    <h4>Score: {{ game?.score }}</h4>
+    <div *ngIf="board && !game?.completed" class="jumbotron">
+      <div *ngFor="let row of rows()" class="board-row">
+        <div *ngFor="let col of cols()" (click)="handleBoardClick({ row, col })"
+             [ngClass]="{'board-cell': true, 'selected': selectedPosition?.row === row && selectedPosition?.col === col}">
+          {{ board.piece({ row, col }) }}
+        </div>
+      </div>
+    </div>
+    <div *ngIf="game?.completed"><br /><br /><h1 style="color: red">Game Over!</h1></div>
+  </div>
+  

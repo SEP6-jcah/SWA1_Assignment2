@@ -1,4 +1,6 @@
-# Assignment 3
+# MatchGameAngular
+
+# Assignment 4 - Match Game Angular
 
 ## Available Scripts
 
@@ -7,7 +9,7 @@ In the project directory, you can run:
 ### `npm start`
 
 Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:4200](http://localhost:4200) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
@@ -29,6 +31,7 @@ Database can be seen in the local copy of https://github.com/olehougaard/gameser
 Highscores are not populated with dummy data so you need to play a few games to see that it works.
 
 # To DO
+- [ ] Ensure 2-way bindings are used 
 - [ ] make code in service classes more uniform 
 - [ ] remove depenendancy on sessionStoarge and only use redux store for state
 - [ ] fix error message for logging in 

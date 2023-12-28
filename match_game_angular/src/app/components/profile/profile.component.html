@@ -1,0 +1,31 @@
+<div class="container">
+    <div>
+      <header class="jumbotron">
+        <h3>
+          <strong>{{ currentUser!.username }}</strong>
+        </h3>
+        <p>
+          <strong>User ID:</strong> {{ currentUser!.id }}
+        </p>
+      </header>
+      <div>
+        <h3>Bio:</h3>
+  
+        <ng-container *ngIf="isEditingBio; else displayBio">
+          <textarea class="jumbotron" [(ngModel)]="currentUser!.bio"></textarea>
+        </ng-container>
+        <ng-template #displayBio>
+          <p class="jumbotron">{{ currentUser!.bio }}</p>
+        </ng-template>
+      </div>
+  
+      <button *ngIf="isEditingBio" (click)="handleUpdateBio()">Save</button>
+  
+      <button (click)="handleEditBioToggle()">
+        {{ isEditingBio ? 'Cancel' : 'Edit' }}
+      </button>
+  
+      <p *ngIf="bioUpdateError" style="color: red">{{ bioUpdateError }}</p>
+    </div>
+  </div>
+  
