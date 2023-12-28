@@ -1,1 +1,39 @@
-<p>highscores works!</p>
+<div class="jumbotron">
+    <div class="center">
+      <h1>High Scores</h1>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let score of top10HighScores">
+            <td>{{ score.user }}</td>
+            <td>{{ score.score }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <div class="jumbotron">
+    <div class="center">
+      <h3><strong>{{ currentUser.username }}</strong></h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let score of userHighScores">
+            <td>{{ score.user }}</td>
+            <td>{{ score.score }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>

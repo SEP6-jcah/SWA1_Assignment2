@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { Board, BoardEvent, Position } from '../../model/oo/board';
 import { GameService } from '../../services/game.service';
@@ -9,7 +9,7 @@ import GameDTO from '../../model/gameDTO';
   templateUrl: './games.component.html',
   styleUrls: ['./games.component.css']
 })
-export class GamesComponent implements OnInit, OnDestroy {
+export class GamesComponent {
   game: GameDTO | null;
   board: Board<string> | null;
   selectedPosition: Position | null;
