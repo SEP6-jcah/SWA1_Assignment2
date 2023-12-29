@@ -24,7 +24,6 @@ export type BoardEvent<T> = {
 export type BoardListener<T> = (event: BoardEvent<T>) => void;
 
 export class Board<T> {
-
     board: (T | undefined)[][];
     listeners: BoardListener<T>[] = [];
     generator: Generator<T>;
@@ -235,7 +234,6 @@ export class Board<T> {
             this.notify({ kind: 'Match', match })
             this.matches.push(match);
 
-
             return true;
         }
 
@@ -269,7 +267,6 @@ export class Board<T> {
     }
 
     private doRefill() {
-
         for (let col = 0; col < this.width; col++) {
             for (let row = this.height - 1; row >= 0; row--) {
                 if (this.board[row][col] === undefined) {
@@ -288,12 +285,12 @@ export class Board<T> {
                 }
             }
         }
-            for (let col = 0; col < this.width; col++) {
-                    for(let row = 0;row<this.height;row++){
-                        if (this.board[row][col] === undefined) {
-                            this.board[row][col] = this.generator.next();
-                        }
-                    }
+        for (let col = 0; col < this.width; col++) {
+            for(let row = 0;row<this.height;row++){
+                if (this.board[row][col] === undefined) {
+                    this.board[row][col] = this.generator.next();
                 }
+            }
+        }
     }
 }

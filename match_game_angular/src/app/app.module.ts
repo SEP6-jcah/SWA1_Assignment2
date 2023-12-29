@@ -12,7 +12,6 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { GamesComponent } from './components/games/games.component';
 import { HighscoresComponent } from './components/highscores/highscores.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,

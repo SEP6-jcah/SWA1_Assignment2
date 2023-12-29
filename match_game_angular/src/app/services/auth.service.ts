@@ -3,7 +3,6 @@ import User from "../model/user";
 
 const API_URL = "http://localhost:9090/";
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -89,7 +88,6 @@ export class AuthService {
 
     return data;
   }
-
 
   async getCurrentUser() {
     try {

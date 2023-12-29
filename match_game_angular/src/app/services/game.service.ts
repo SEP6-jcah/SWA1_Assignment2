@@ -7,8 +7,6 @@ const API_URL = 'http://localhost:9090';
   providedIn: 'root',
 })
 export class GameService {
-
-
   async getAllGames(): Promise<any> {
     const { userId, token } = JSON.parse(sessionStorage["user"]);
 
@@ -34,7 +32,6 @@ export class GameService {
   }
 
   async getGameDetails(token: string, gameId: string): Promise<any> {
-    
     const response = await fetch(`${API_URL}/games/${gameId}?token=${token}`);
     if (response.ok) {
       return response.json();
@@ -59,4 +56,3 @@ export class GameService {
     }
   }
 }
-

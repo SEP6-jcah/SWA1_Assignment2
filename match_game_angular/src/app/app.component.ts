@@ -9,7 +9,6 @@ import { AuthService } from './services/auth.service';
 export class AppComponent {
   isLoggedIn = false;
 
-
   constructor(private authService: AuthService) {}
 
   async ngOnInit() {
@@ -17,7 +16,6 @@ export class AppComponent {
 
     document.addEventListener('logout', this.logout);
   }
-
 
   ngOnDestroy() {
     document.removeEventListener('logout', this.logout)
