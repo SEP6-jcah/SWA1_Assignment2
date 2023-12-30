@@ -276,13 +276,13 @@ describe("Board", () => {
             })
 
             it("shifts tiles down before replacing multiple matches", () => {
-                generator.prepare('D', 'B', 'C', 'A', 'B', 'A')
+                generator.prepare('1', '2', '3', '4', '5','6')
                 require(Board.move(generator, board, {row: 3, col: 0}, {row: 3, col: 2}).board).toMatch(
                     '*', 'B', '*',
                     '*', 'B', '*',
                     '*', 'A', '*',
                     'A', 'D', 'A',
-                ).withPieces('A', 'A', 'B', 'B', 'C', 'D')
+                    ).withPieces('1', '2', '3', '4', '5','6')
             })
 
             it("only deletes a double match once", () => {
@@ -293,14 +293,14 @@ describe("Board", () => {
                     'C', 'B', 'D',
                 )
                 board = Board.create(generator, 3, 4)
-                generator.prepare('D', 'C', 'B', 'B', 'A')
+                generator.prepare('1', '2', '3', '4', '5')
                 require(Board.move(generator, board, {row: 0, col: 1}, {row: 2, col: 1}).board).toMatch(
                     '*', '*', '*',
                     'D', '*', 'A',
                     'D', '*', 'C',
                     'C', 'A', 'D',
-                ).withPieces('A', 'B', 'B', 'C', 'D')
-            })
+                    ).withPieces('1', '2', '3', '4', '5')
+                })
         })
 
         describe("Refill event", () => {
