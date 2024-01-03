@@ -14,6 +14,7 @@ export const gameSlice = createSlice({
       },
       resetGame: (state) => {
         state.currentGame = {} as GameDTO;
+        state.turns = 0;
       },
       increaseScore: (state) => {
         state.currentGame.score += 1;
